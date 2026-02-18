@@ -5,19 +5,19 @@
 Este desafio tem como objetivo avaliar minhas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Foi construido um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
 
 Tecnicas utilizadas:
--AWS Lambda (CLoud)
--AWS S3 (CLoud)
--AWS Cloud Watch (Controle de logs)
--AWS EC2 (Windows server - Postgres)
--Postgres (Banco de dados)
--AWS EC2 (Linux server - Layers Lambda)
--Docker (Lmbda Layer)
+-AWS Lambda (CLoud);
+-AWS S3 (CLoud);
+-AWS Cloud Watch (Controle de logs);
+-AWS EC2 (Windows server - Postgres);
+-Postgres (Banco de dados);
+-AWS EC2 (Linux server - Layers Lambda);
+-Docker (Lmbda Layer);
 
 Linguagens:
--Python
--SQL
--Linux CMD Ubuntu
--Windows CDM Sever
+-Python;
+-SQL;
+-Linux CMD Ubuntu;
+-Windows CDM Sever;
 
 ## Contexto do Negócio
 
