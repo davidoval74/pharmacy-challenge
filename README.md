@@ -2,9 +2,7 @@
 
 ## Visão Geral
 
-Teste
-
-Este desafio tem como objetivo avaliar suas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Você deverá construir um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
+Este desafio tem como objetivo avaliar minhas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Você deverá construir um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
 
 ## Contexto do Negócio
 
@@ -14,15 +12,49 @@ Uma rede de farmácias precisa consolidar dados de **Associados** e **Terceiros*
 
 ### 1. Extração (SFTP → S3)
 
-Desenvolver um processo que:
+🔄 Estratégia de Processamento Incremental
 
-- Conecte ao servidor SFTP fornecido
-- Extraia os seguintes arquivos:
-  - `Associados.csv`
-  - `Terceros.csv`
-  - `Maestro.csv`
-- Transforme e consolide os dados em um único arquivo `pharmacy.csv`
-- Salve o arquivo consolidado no bucket S3
+A extração do SFTP foi implementada de forma incremental e idempotente.
+
+Estratégia adotada:
+
+Infraestrutura AWS -> AWS LAMBDA -> PYTHON FUNCTION -> S3
+
+Leitura dos arquivos SFTP, consolidado no S3
+
+Comparação com o estado atual do banco
+
+Classificação dos registros em:
+
+Novos
+
+Alterados
+
+Removidos (soft delete)
+
+Regras aplicadas:
+🆕 Novo registro
+
+INSERT
+
+created_at = NOW()
+
+enabled = true
+
+🔁 Registro alterado
+
+UPDATE
+
+last_modified = NOW()
+
+❌ Registro removido
+
+UPDATE enabled = false
+
+last_modified = NOW()
+
+Nunca é realizado DELETE físico
+
 
 
 
