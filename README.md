@@ -4,34 +4,34 @@
 
 Este desafio tem como objetivo avaliar minhas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Foi construido um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
 
-Tecnicas utilizadas:
--AWS Lambda (CLoud);
--AWS S3 (CLoud);
--AWS Cloud Watch (Controle de logs);
--AWS EC2 (Windows server - Postgres);
--Postgres (Banco de dados);
--AWS EC2 (Linux server - Layers Lambda);
--Docker (Lmbda Layer);
+## Stack Tecnológica
 
-Linguagens:
--Python;
--SQL;
--Linux CMD Ubuntu;
--Windows CDM Sever;
+### ☁️ Cloud & Infraestrutura
+- AWS Lambda
+- AWS S3
+- AWS CloudWatch
+- AWS EC2 (Windows - PostgreSQL)
+- AWS EC2 (Linux - Lambda Layers)
+
+### 🗄 Banco de Dados
+- PostgreSQL
+
+### 🐳 Containerização
+- Docker (Lambda Layer)
 
 ## Contexto do Negócio
 
 Uma rede de farmácias precisa consolidar dados de **Associados** e **Terceiros** em uma base única para análises e operações. Os dados chegam em arquivos CSV através de um servidor SFTP e precisam ser processados, transformados e disponibilizados em um banco de dados relacional.
 
-## Objetivos
+
 
 ### 1. Extração (SFTP → S3)
+
+#### Estratégia adotada:
 
 🔄 Estratégia de Processamento Incremental 
 
 A extração do SFTP foi implementada de forma incremental e idempotente.
-
-## Estratégia adotada:
 
 Infraestrutura AWS -> AWS LAMBDA (PYTHON FUNCTION) -> S3 (Read: Function lambda Extract)
 
@@ -53,14 +53,13 @@ Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
 AWS Monitoring Cloud Watch:
 (https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logStream:group=/aws/lambda/Extraction)
 
-Classificação: Stage Armazenamento bucket
 
 
 
 
 ### 2. Mapeamento de Dados
 
-O arquivo `pharmacy.csv` deve conter as seguintes colunas extraídas/derivadas dos arquivos fonte:
+O arquivo `pharmacy.csv` contem as seguintes colunas extraídas/derivadas dos arquivos fonte:
 
 | Coluna Destino | Origem | Descrição |
 |----------------|--------|-----------|
@@ -78,7 +77,7 @@ O arquivo `pharmacy.csv` deve conter as seguintes colunas extraídas/derivadas d
 - Caso contrário → `false`
 
 
-## Estratégia adotada:
+#### Estratégia adotada:
 
 🔄 Estratégia de Processamento de Sobrescrita
 
@@ -108,9 +107,6 @@ AWS Monitoring Cloud Watch:
 
 ### 3. Carga no PostgreSQL
 
-
-## Objetivos
-
 Criar um serviço que:
 
 - Leia o arquivo `pharmacy.csv` do S3
@@ -138,7 +134,7 @@ CREATE INDEX idx_pharmacy_enabled ON pharmacy(enabled);
 ```
 
 
-## Estratégia adotada:
+#### Estratégia adotada:
 
 🔄 Estratégia de Processamento incremental
 
@@ -157,8 +153,6 @@ Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
 
 AWS Monitoring Cloud Watch:
 (https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups/log-group/%2Faws%2Flambda%2FTransaction)
-
-
 
 
 
