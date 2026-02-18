@@ -93,10 +93,10 @@ Leitura dos arquivos STG, Consolidado no S3 (GOLD):
 Arquivos e buckets:
 - Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv 
 ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
-- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv 
-((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
-- Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv 
-(https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
+- Amazon S3/Buckets/b2list/Terceiros/*.csv >> AmazonS3/Buckets/b2list/Terceiros-gold/*csv 
+((https://b2list.s3.us-east-2.amazonaws.com/Terceiros-Gold/))
+- Amazon S3/Buckets/b2list/Maestro/*.csv >> Amazon S3/Buckets/b2list/Maestro-Gold/*.csv 
+(https://b2list.s3.us-east-2.amazonaws.com/Maestro-Gold/)
 
  Pré-Postgres S3:
   Amazon S3/Buckets/b2list/Pharmacy-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Pharmacy-Gold/))
