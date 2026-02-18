@@ -2,7 +2,22 @@
 
 ## Visão Geral
 
-Este desafio tem como objetivo avaliar minhas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Você deverá construir um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
+Este desafio tem como objetivo avaliar minhas habilidades em engenharia de dados, integração de sistemas e arquitetura de soluções. Foi construido um pipeline de dados completo que extrai informações de um servidor SFTP, transforma e consolida os dados, armazena em um Data Lake (S3) e sincroniza com um banco de dados PostgreSQL.
+
+Tecnicas utilizadas:
+-AWS Lambda (CLoud)
+-AWS S3 (CLoud)
+-AWS Cloud Watch (Controle de logs)
+-AWS EC2 (Windows server - Postgres)
+-Postgres (Banco de dados)
+-AWS EC2 (Linux server - Layers Lambda)
+-Docker (Lmbda Layer)
+
+Linguagens:
+-Python
+-SQL
+-Linux CMD Ubuntu
+-Windows CDM Sever
 
 ## Contexto do Negócio
 
@@ -12,48 +27,33 @@ Uma rede de farmácias precisa consolidar dados de **Associados** e **Terceiros*
 
 ### 1. Extração (SFTP → S3)
 
-🔄 Estratégia de Processamento Incremental
+🔄 Estratégia de Processamento Incremental 
 
 A extração do SFTP foi implementada de forma incremental e idempotente.
 
-Estratégia adotada:
+## Estratégia adotada:
 
-Infraestrutura AWS -> AWS LAMBDA -> PYTHON FUNCTION -> S3
+Infraestrutura AWS -> AWS LAMBDA (PYTHON FUNCTION) -> S3 (Read: Function lambda Extract)
 
-Leitura dos arquivos SFTP, consolidado no S3
+Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
 
-Comparação com o estado atual do banco
+Leitura dos arquivos SFTP, consolidado no S3;
 
-Classificação dos registros em:
+Arquivos e buckets:
+ -Associados.csv >> Amazon S3/Buckets/ b2list /Associados/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados/)
+ -Terceros.csv >> Amazon S3/Buckets / b2list /Terceros/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Terceiros/)
+ -Maestro.csv >> Amazon S3/Buckets/ b2list /Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Maestro/)
 
-Novos
+Lambda AWS Codigo Python:
 
-Alterados
+Lambda >> Funções >> Extraction 
+Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
 
-Removidos (soft delete)
 
-Regras aplicadas:
-🆕 Novo registro
+AWS Monitoring Cloud Watch:
+(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logStream:group=/aws/lambda/Extraction)
 
-INSERT
-
-created_at = NOW()
-
-enabled = true
-
-🔁 Registro alterado
-
-UPDATE
-
-last_modified = NOW()
-
-❌ Registro removido
-
-UPDATE enabled = false
-
-last_modified = NOW()
-
-Nunca é realizado DELETE físico
+Classificação: Stage Armazenamento bucket
 
 
 
@@ -77,7 +77,39 @@ O arquivo `pharmacy.csv` deve conter as seguintes colunas extraídas/derivadas d
 - Se OBSERVACAO contém "Ativo", "Em dia", "Cadastro ativo", "Verificado" ou "Contrato vigente" → `true`
 - Caso contrário → `false`
 
+
+## Estratégia adotada:
+
+🔄 Estratégia de Processamento de Sobrescrita
+
+Infraestrutura AWS -> AWS LAMBDA (PYTHON FUNCTION) -> S3 (Read: Function Transaction)
+
+Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
+
+Leitura dos arquivos STG, Consolidado no S3 (GOLD):
+
+Arquivos e buckets:
+ -Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+ -Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+ -Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
+
+ Pré-Postgres S3:
+  Amazon S3/Buckets/b2list/Pharmacy-gold/*csv
+
+
+Codigos python:
+Lambda >> Funções >> Transaction
+Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
+
+AWS Monitoring Cloud Watch:
+(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups/log-group/%2Faws%2Flambda%2FTransaction)
+
+
+
 ### 3. Carga no PostgreSQL
+
+
+## Objetivos
 
 Criar um serviço que:
 
@@ -105,16 +137,44 @@ CREATE INDEX idx_pharmacy_category ON pharmacy(category);
 CREATE INDEX idx_pharmacy_enabled ON pharmacy(enabled);
 ```
 
+
+## Estratégia adotada:
+
+🔄 Estratégia de Processamento incremental
+
+Foi adotado o metodo load, utilizando os dados previamente armazenados no AWS S3 para o Postgres via lambda;
+
+Infraestrutura AWS -> AWS LAMBDA (PYTHON FUNCTION) -> S3 (Read: Function LoadPostgres)
+
+Arquivos e buckets:
+
+ -Amazon S3/Buckets/b2list/Pharmacy-gold/*csv >> Postgres B2list.STG_Pharmacy.db
+
+
+Codigos python:
+Lambda >> Funções >> loadPostgres
+Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
+
+AWS Monitoring Cloud Watch:
+(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups/log-group/%2Faws%2Flambda%2FTransaction)
+
+
+
+
+
+
 ### 4. Sincronização Incremental
 
-Implementar uma rotina que:
+Implementado rotinas no postgres que:
 
-- Execute a cada **15 minutos**
-- Verifique se houve alterações no arquivo `pharmacy.csv` no S3
-- Realize **atualização incremental** no banco de dados:
+- Execute a cada **5 minutos**
+- Verifique se houve alterações no arquivo `pharmacy.csv` no S3 pareado com `b2list.stg_pharmacy.db`
+-  **atualização incremental** no banco de dados:
   - Novos registros → INSERT com `created_at` = timestamp atual e `enabled = true`
   - Registros alterados → UPDATE com `last_modified` = timestamp atual
   - Registros removidos → UPDATE `enabled = false` (exclusão lógica / soft delete)
+
+ROTINA POSTGRES: 
 
 **Importante sobre Soft Delete:**
 - A coluna `enabled` (BOOLEAN) controla a exclusão lógica
@@ -122,50 +182,6 @@ Implementar uma rotina que:
 - `enabled = false` → Registro excluído logicamente
 - Registros que existiam no banco mas não estão mais no arquivo fonte devem ter `enabled` alterado para `false`
 - NUNCA realizar DELETE físico dos registros
-
-## Requisitos Técnicos
-
-### Tecnologias 
-
-Escolha uma das seguintes stacks:
-
-- **Python** (recomendado: pandas, boto3, paramiko, psycopg2, SQLAlchemy)
-- **Databricks** (PySpark, Delta Lake)
-
-### Requisitos Obrigatórios
-
-1. **Código limpo e bem documentado**
-2. **Tratamento de erros** 
-6. **Docker** para containerização da aplicação
-7. **README** com instruções de execução
-
-### Requisitos Desejáveis
-
-- Documentação de arquitetura (diagrama)
-
-
-
-## Credenciais
-
-As credenciais de acesso serão fornecidas separadamente:
-
-- **SFTP**: host, porta, usuário e senha
-- **S3**: utilizar uma conta pessoal
-- **PostgreSQL**: local
-
-## Critérios de Avaliação
-
-| Critério | Peso |
-|----------|------|
-| Funcionalidade completa | 45% |
-| Qualidade do código | 25% |
-| Arquitetura e design | 20% |
-| Documentação | 10% |
-
-## Prazo
-
-- **Entrega**: 7 dias corridos a partir do recebimento das credenciais
-- **Apresentação**: Agendar call de 30-45 min para apresentação da solução
 
 ## Entrega
 
@@ -180,4 +196,5 @@ Em caso de dúvidas sobre o desafio, entre em contato através do e-mail forneci
 
 ---
 
-**Boa sorte! 🚀**
+**Obrigado B2list! 🚀**
+
