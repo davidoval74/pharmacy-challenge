@@ -171,7 +171,54 @@ Implementado rotinas no postgres que:
   - Registros alterados → UPDATE com `last_modified` = timestamp atual
   - Registros removidos → UPDATE `enabled = false` (exclusão lógica / soft delete)
 
-ROTINA POSTGRES: 
+Procedure Postgres:
+
+```sql
+
+CREATE OR REPLACE PROCEDURE sync_pharmacy()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- MERGE update/insert
+    MERGE INTO public.pharmacy AS target
+    USING (
+        SELECT *
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (PARTITION BY id ORDER BY data_transf DESC) AS rn
+            FROM public.stg_pharmacy
+        ) ranked
+        WHERE rn = 1 AND data_transf > current_date
+    ) AS stage
+    ON target.code_pharmacy = stage.id
+    WHEN MATCHED THEN
+        UPDATE SET
+            trade_name = stage.NOME,
+            category = stage.category,
+            corporate_name = stage.NOME_FANTASIA,
+            nit = stage.NIT,
+            lat = stage.LATITUDE,
+            lon = stage.LONGITUDE,
+            enabled = stage.enabled,
+			last_modified = data_transf
+			
+    WHEN NOT MATCHED THEN
+        INSERT (code_pharmacy, trade_name, category, corporate_name, nit, lat, lon, enabled)
+        VALUES (stage.id, stage.NOME, stage.category, stage.NOME_FANTASIA, stage.NIT, stage.LATITUDE, stage.LONGITUDE, TRUE);
+
+    -- DELETE registros obsoletos
+    DELETE FROM public.pharmacy
+    WHERE code_pharmacy NOT IN (
+        SELECT id
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (PARTITION BY id ORDER BY data_transf DESC) AS rn
+            FROM public.stg_pharmacy
+        ) ranked
+        WHERE rn = 1 AND data_transf > current_date
+    );
+END;
+$$;
+```
+
 
 **Importante sobre Soft Delete:**
 - A coluna `enabled` (BOOLEAN) controla a exclusão lógica
@@ -182,9 +229,9 @@ ROTINA POSTGRES:
 
 ## Entrega
 
-1. Repositório Git (GitHub)
-2. Acesso de leitura para o avaliador
-3. Branch `main` com a solução final
+1. Repositório Git (GitHub) : https://github.com/davidoval74/pharmacy-challenge
+2. Acesso de leitura para o avaliador :  <mislene.dalila@b2list.com>
+3. Branch `main` com a solução final no Github
 4. README com instruções claras de execução
 
 ## Dúvidas
