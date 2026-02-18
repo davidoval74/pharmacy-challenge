@@ -40,9 +40,9 @@ Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
 Leitura dos arquivos SFTP, consolidado no S3;
 
 Arquivos e buckets:
- -Associados.csv >> Amazon S3/Buckets/ b2list /Associados/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados/)
- -Terceros.csv >> Amazon S3/Buckets / b2list /Terceros/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Terceiros/)
- -Maestro.csv >> Amazon S3/Buckets/ b2list /Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Maestro/)
+- Associados.csv >> Amazon S3/Buckets/ b2list /Associados/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados/)
+- Terceros.csv >> Amazon S3/Buckets / b2list /Terceros/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Terceiros/)
+- Maestro.csv >> Amazon S3/Buckets/ b2list /Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Maestro/)
 
 Lambda AWS Codigo Python:
 
@@ -88,9 +88,9 @@ Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
 Leitura dos arquivos STG, Consolidado no S3 (GOLD):
 
 Arquivos e buckets:
- -Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
- -Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
- -Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
+- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+- Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
 
  Pré-Postgres S3:
   Amazon S3/Buckets/b2list/Pharmacy-gold/*csv
@@ -144,7 +144,7 @@ Infraestrutura AWS -> AWS LAMBDA (PYTHON FUNCTION) -> S3 (Read: Function LoadPos
 
 Arquivos e buckets:
 
- -Amazon S3/Buckets/b2list/Pharmacy-gold/*csv >> Postgres B2list.STG_Pharmacy.db
+- Amazon S3/Buckets/b2list/Pharmacy-gold/*csv >> Postgres B2list.STG_Pharmacy.db
 
 
 Codigos python:
