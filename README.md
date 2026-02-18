@@ -25,7 +25,7 @@ Uma rede de farmácias precisa consolidar dados de **Associados** e **Terceiros*
 
 
 
-### 1. Extração (SFTP → S3)
+### 1. Extração (SFTP → S3) 
 
 #### Estratégia adotada:
 
@@ -40,12 +40,15 @@ Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
 Leitura dos arquivos SFTP, consolidado no S3;
 
 Arquivos e buckets:
-- Associados.csv >> Amazon S3/Buckets/ b2list /Associados/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados/)
-- Terceros.csv >> Amazon S3/Buckets / b2list /Terceros/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Terceiros/)
-- Maestro.csv >> Amazon S3/Buckets/ b2list /Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Maestro/)
+- Associados.csv >> Amazon S3/Buckets/ b2list /Associados/*.csv
+ (https://b2list.s3.us-east-2.amazonaws.com/Associados/)
+- Terceros.csv >> Amazon S3/Buckets / b2list /Terceros/*.csv
+ (https://b2list.s3.us-east-2.amazonaws.com/Terceiros/)
+- Maestro.csv >> Amazon S3/Buckets/ b2list /Maestro/*.csv 
+(https://b2list.s3.us-east-2.amazonaws.com/Maestro/)
+
 
 Lambda AWS Codigo Python:
-
 Lambda >> Funções >> Extraction 
 Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
 
@@ -88,29 +91,30 @@ Foi adotado os metodos de STG (Stage) alem da criação de medalhas no S3 AWS.
 Leitura dos arquivos STG, Consolidado no S3 (GOLD):
 
 Arquivos e buckets:
-- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
-- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
-- Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv (https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
+- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv 
+((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+- Amazon S3/Buckets/b2list/Associados/*.csv >> AmazonS3/Buckets/b2list/Associados-gold/*csv 
+((https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/))
+- Maestro.csv >> Amazon S3/Buckets/b2list/Maestro/*.csv 
+(https://b2list.s3.us-east-2.amazonaws.com/Associados-Gold/)
 
  Pré-Postgres S3:
-  Amazon S3/Buckets/b2list/Pharmacy-gold/*csv
+  Amazon S3/Buckets/b2list/Pharmacy-gold/*csv ((https://b2list.s3.us-east-2.amazonaws.com/Pharmacy-Gold/))
 
 
-Codigos python:
+Lambda AWS Codigo Python:
 Lambda >> Funções >> Transaction
-Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
+Hash SHA256 = 'JrBeDlxfxncvZ1GB7hxtIKInnw8y7GFkNCjLHfDtMPY='
 
 AWS Monitoring Cloud Watch:
-(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups/log-group/%2Faws%2Flambda%2FTransaction)
-
-
+(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logStream:group=/aws/lambda/Transaction)
 
 ### 3. Carga no PostgreSQL
 
-Criar um serviço que:
+Function Lambda Criar um serviço que:
 
-- Leia o arquivo `pharmacy.csv` do S3
-- Insira os dados na tabela `pharmacy` com o seguinte schema:
+- Le o arquivo `pharmacy.csv` do S3
+- Insere os dados na tabela `pharmacy` com o seguinte schema:
 
 ```sql
 CREATE TABLE pharmacy (
@@ -147,14 +151,13 @@ Arquivos e buckets:
 - Amazon S3/Buckets/b2list/Pharmacy-gold/*csv >> Postgres B2list.STG_Pharmacy.db
 
 
-Codigos python:
-Lambda >> Funções >> loadPostgres
-Hash SHA256 = 'KS11PMDn60cSDtDtV6P5QKj2LNX7RoVClXzt5X4yo70='
+Lambda AWS Codigo Python:
+Lambda >> Funções >> LoadPostgres
+Hash SHA256 = '4Ja7J7fA1kVbUlztWgAh6qTTEMQEVyx2SzZBIqpWrZc='
+
 
 AWS Monitoring Cloud Watch:
-(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups/log-group/%2Faws%2Flambda%2FTransaction)
-
-
+(https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logStream:group=/aws/lambda/Load_Postgres312)
 
 
 ### 4. Sincronização Incremental
