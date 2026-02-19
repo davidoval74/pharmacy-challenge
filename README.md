@@ -174,10 +174,10 @@ Implementado rotinas no postgres que:
 Procedure Postgres:
 
 ```sql
-
-CREATE OR REPLACE PROCEDURE sync_pharmacy()
-LANGUAGE plpgsql
-AS $$
+CREATE OR REPLACE PROCEDURE public.sync_pharmacy(
+	)
+LANGUAGE 'plpgsql'
+AS $BODY$
 BEGIN
     -- MERGE update/insert
     MERGE INTO public.pharmacy AS target
@@ -206,7 +206,8 @@ BEGIN
         VALUES (stage.id, stage.NOME, stage.category, stage.NOME_FANTASIA, stage.NIT, stage.LATITUDE, stage.LONGITUDE, TRUE);
 
     -- DELETE registros obsoletos
-    DELETE FROM public.pharmacy
+    UPDATE public.pharmacy
+	SET enabled = False
     WHERE code_pharmacy NOT IN (
         SELECT id
         FROM (
@@ -216,7 +217,6 @@ BEGIN
         WHERE rn = 1 AND data_transf > current_date
     );
 END;
-$$;
 ```
 
 
